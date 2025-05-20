@@ -3,7 +3,8 @@ CREATE TABLE users (
   first_name VARCHAR(50),
   last_name VARCHAR(50),
   email VARCHAR(100) UNIQUE,
-  password VARCHAR(255)
+  password VARCHAR(255),
+  ALTER TABLE users ADD COLUMN photo VARCHAR(255) NULL;
 );
 
 CREATE TABLE grades (
