@@ -1,133 +1,78 @@
-const Sunday =[
-    {   
-        time: 'Sunday',
-        roomNumber: 'Holiday',
-        subject: 'No class Available',
-        type: ''
-    }
-]
-const Monday =[
-    {   
-        time: '09-10 AM',
-        roomNumber: '38-718',
-        subject: 'DBMS130',
-        type: 'Lecture'
-    },
-    {   
-        time: '10-11 AM',
-        roomNumber: '38-718',
-        subject: 'MTH166',
-        type: 'Tutorial'
-    },
-    {   
-        time: '12-01 PM',
-        roomNumber: '38-718',
-        subject: 'NS200',
-        type: 'Lecture'
-    }
-]
-const Tuesday =[
-    {   
-        time: '09-10 AM',
-        roomNumber: '27-304Y',
-        subject: 'MTH166',
-        type: 'Tutorial'
-    },
-    {   
-        time: '11-12 AM',
-        roomNumber: '28-107',
-        subject: 'CS849',
-        type: 'Lecture'
-    },
-    {   
-        time: '12-01 PM',
-        roomNumber: '28-107',
-        subject: 'CS849',
-        type: 'Lecture'
-    },
-    {   
-        time: '02-03 PM',
-        roomNumber: '38-718',
-        subject: 'NS200',
-        type: 'Lecture'
-    }
-]
+// Elements
+const addClassBtn = document.getElementById('addClassBtn');
+const addClassModal = document.getElementById('addClassModal');
+const closeAddClass = document.getElementById('closeAddClass');
+const addClassForm = document.getElementById('addClassForm');
+const timetableBody = document.querySelector('#timetable tbody');
 
-const Wednesday =[
-    {   
-        time: '10-11 AM',
-        roomNumber: '33-309',
-        subject: 'DBMS130',
-        type: 'Lecture'
-    },
-    {   
-        time: '11-12 AM',
-        roomNumber: '38-719',
-        subject: 'CS200',
-        type: 'Lecture'
-    }
-]
+// Show the modal when Add Class button clicked
+addClassBtn.addEventListener('click', () => {
+  addClassModal.classList.add('active');
+});
 
-const Thursday =[
-    {   
-        time: '11-12 AM',
-        roomNumber: '33-309',
-        subject: 'MTH166',
-        type: 'Lecture'
-    },
-    {   
-        time: '01-02 PM',
-        roomNumber: '38-719',
-        subject: 'CS849',
-        type: 'Lecture'
-    },
-    {   
-        time: '02-03 PM',
-        roomNumber: '38-718',
-        subject: 'NS200',
-        type: 'Lecture'
-    }
-]
+// Close modal when clicking close icon
+closeAddClass.addEventListener('click', () => {
+  addClassModal.classList.remove('active');
+});
 
-const Friday =[
-    {   
-        time: '10-11 AM',
-        roomNumber: '33-309',
-        subject: 'MEC103',
-        type: 'Lecture'
-    },
-    {   
-        time: '11-12 AM',
-        roomNumber: '33-309',
-        subject: 'MEC103',
-        type: 'Lecture'
-    },
-    {   
-        time: '02-03 PM',
-        roomNumber: '33-601',
-        subject: 'CS849',
-        type: 'Tutorial'
-    },
+// Close modal when clicking outside modal content
+window.addEventListener('click', (e) => {
+  if (e.target === addClassModal) {
+    addClassModal.classList.remove('active');
+  }
+});
 
-]
+// Load saved classes from localStorage and display them
+function loadClasses() {
+  const classes = JSON.parse(localStorage.getItem('user_classes')) || [];
+  timetableBody.innerHTML = ''; // Clear current table rows
 
-const Saturday =[
-    {   
-        time: '09-10 AM',
-        roomNumber: '34-604',
-        subject: 'DBMS130',
-        type: 'Tutorial'
-    },
-    {   
-        time: '10-11 AM',
-        roomNumber: '34-604',
-        subject: 'DBMS130',
-        type: 'Lecture'
-    },
-    {   
-        time: '01-02 PM',
-        roomNumber: '33-309',
-        subject: 'MTH166',
-        type: 'Lecture'
-    }
-]
+  classes.forEach((cls, idx) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${cls.time}</td>
+      <td>${cls.room}</td>
+      <td>${cls.course}</td>
+      <td>${cls.type}</td>
+    `;
+    timetableBody.appendChild(tr);
+  });
+}
+
+// Save a new class schedule to localStorage
+function saveClass(newClass) {
+  const classes = JSON.parse(localStorage.getItem('user_classes')) || [];
+  classes.push(newClass);
+  localStorage.setItem('user_classes', JSON.stringify(classes));
+}
+
+// Handle form submission
+addClassForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+
+  // Get values from form inputs
+  const time = document.getElementById('classTime').value.trim();
+  const room = document.getElementById('classRoom').value.trim();
+  const course = document.getElementById('classCourse').value.trim();
+  const type = document.getElementById('classType').value;
+
+  // Validate input (basic)
+  if (!time || !room || !course || !type) {
+    alert('Please fill all fields!');
+    return;
+  }
+
+  // Create class object
+  const newClass = { time, room, course, type };
+
+  // Save and reload timetable
+  saveClass(newClass);
+  loadClasses();
+
+  // Reset form and close modal
+  addClassForm.reset();
+  addClassModal.classList.remove('active');
+});
+
+// Initialize display on page load
+window.addEventListener('DOMContentLoaded', loadClasses);
